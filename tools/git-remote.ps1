@@ -9,7 +9,22 @@ param(
 )
 
 $ErrorActionPreference = 'Continue'
-$RepoPath = Split-Path -Parent $PSScriptRoot     # tools 的上一级就是仓库根目录
+# 从脚本所在位置向上找 .git，最多找 6 层（脚本被复制到别处也不会找错仓库）
+$RepoPath = $PSScriptRoot
+for ($i = 0; $i -lt 6; $i++) {
+    if ($RepoPath -and (Test-Path (Join-Path $RepoPath '.git'))) { break }
+    $parent = Split-Path -Parent $RepoPath
+    if (-not $parent -or $parent -eq $RepoPath) { $RepoPath = $null; break }
+    $RepoPath = $parent
+}
+if (-not $RepoPath) {
+    Write-Host ""
+    Write-Host "  找不到 git 仓库（没有 .git 目录）。" -ForegroundColor Red
+    Write-Host "  请把本工具放在仓库目录里面再运行。" -ForegroundColor Gray
+    Write-Host ""
+    Read-Host "按回车键退出"
+    exit 1
+}
 
 $Candidates = @(
     '140.82.112.3',
