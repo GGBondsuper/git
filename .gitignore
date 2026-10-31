@@ -26,8 +26,8 @@ dist/
 build/
 *.log
 
-# PDF 导出中间产物（打印版 HTML，可随时重新生成）
-exports/_*.html
+# 导出产物（打印版 HTML 与 PDF，都能随时重新生成，不进仓库）
+exports/
 
 # 工具项目数据（记忆、配置，不进仓库）
 .workbuddy/
