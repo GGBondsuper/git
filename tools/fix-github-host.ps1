@@ -77,6 +77,28 @@ Write-Host "  GitHub 访问修复工具" -ForegroundColor White
 Write-Host "  把 github.com 指向现场实测可用的服务器地址" -ForegroundColor DarkGray
 Line
 
+# ---------- 0. 状态预检（只读，不需要管理员） ----------
+# 恢复模式下若连备份都没有，说明本工具从没改过 hosts——那就是原始状态，
+# 不必再要求管理员权限，直接给出结论即可。
+if ($Restore) {
+    $etcDir = Split-Path $HostsPath
+    $baks = @(Get-ChildItem -Path $etcDir -Filter 'hosts.bak-*' -ErrorAction SilentlyContinue)
+    if ($baks.Count -eq 0) {
+        Step "状态检查"
+        Ok "没有找到任何备份文件，hosts 从未被本工具修改过"
+        Info "也就是说：现在就是这个系统的原始状态，不需要恢复"
+        $marked = Select-String -Path $HostsPath -Pattern 'WorkBuddy GitHub Fix' -SimpleMatch -ErrorAction SilentlyContinue
+        if ($marked) {
+            Warn "但 hosts 里仍有本工具的标记行，备份却丢失了"
+            Info "请手动打开检查并删掉带该标记的行：$HostsPath"
+        }
+        Write-Host ""
+        Read-Host "按回车键退出"
+        exit 0
+    }
+    Info "发现 $($baks.Count) 份备份，继续以管理员身份还原"
+}
+
 # ---------- 1. 权限 ----------
 Step "1 / 5  检查管理员权限"
 if (-not (Test-IsAdmin)) {
