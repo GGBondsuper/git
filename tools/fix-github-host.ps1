@@ -31,6 +31,18 @@ function Warn($t) { Write-Host "   [注意] $t" -ForegroundColor Yellow }
 function Fail($t) { Write-Host "   [失败] $t" -ForegroundColor Red }
 function Info($t) { Write-Host "          $t" -ForegroundColor Gray }
 
+# ---------- 环境自检：curl.exe 是硬依赖 ----------
+# 没有它测不出哪个 IP 快，选出的地址就纯靠猜——直接拦掉更安全
+if (-not (Test-Path $CurlExe)) {
+    Fail "找不到 curl.exe：$CurlExe"
+    Info "curl 是 Windows 10（1803 及以后）系统自带的组件"
+    Info "你的系统较旧，或者这个文件被安全软件移除了"
+    Info "处理：升级 Windows，或装好 curl 后再运行本工具"
+    Write-Host ""
+    Read-Host "按回车键退出"
+    exit 1
+}
+
 # ---------- 完整 HTTPS 探测：指定 IP 访问 github.com ----------
 # 注意：只看 TCP 握手会误判——有些中间设备会应答 SYN 之后掐断 TLS
 function Test-GitHubIp {
