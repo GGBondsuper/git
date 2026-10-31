@@ -93,15 +93,25 @@ Ok "管理员权限已确认"
 if ($Restore) {
     Step "恢复模式：从备份还原 hosts"
     $dir = Split-Path $HostsPath
-    $baks = Get-ChildItem -Path $dir -Filter 'hosts.bak-*' -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending
-    if (-not $baks) {
+    # 优先用「原始备份」（第一次修改前的干净版本），而不是最近一次
+    $originals = @(Get-ChildItem -Path $dir -Filter 'hosts.bak-original-*' -ErrorAction SilentlyContinue |
+                   Sort-Object LastWriteTime -Descending)
+    $allBaks   = @(Get-ChildItem -Path $dir -Filter 'hosts.bak-*' -ErrorAction SilentlyContinue |
+                   Sort-Object LastWriteTime -Descending)
+
+    $latest = $null
+    if ($originals.Count -gt 0) {
+        $latest = $originals[0]
+        Info "使用原始备份：$($latest.Name)"
+    } elseif ($allBaks.Count -gt 0) {
+        $latest = $allBaks[0]
+        Warn "没找到原始备份，只能用最近的一份：$($latest.Name)"
+    } else {
         Fail "没找到任何备份文件（hosts.bak-*）"
+        Info "hosts 可能已被改过，需要手动检查：$HostsPath"
         Read-Host "按回车键退出"
         exit 1
     }
-    $latest = $baks[0]
-    Info "使用备份：$($latest.Name)  ($($latest.LastWriteTime))"
     try {
         $item = Get-Item $HostsPath
         if ($item.IsReadOnly) { $item.IsReadOnly = $false }
@@ -153,15 +163,33 @@ Ok "选中：$bestIp （TLS 握手 $bestTls 秒）"
 
 # ---------- 3. 备份 ----------
 Step "3 / 5  备份原始 hosts"
+$etcDir = Split-Path $HostsPath
 $stamp  = Get-Date -Format 'yyyyMMdd-HHmmss'
-$backup = "$HostsPath.bak-$stamp"
-try {
-    Copy-Item $HostsPath $backup -Force
-    Ok "已备份到 hosts.bak-$stamp"
-} catch {
-    Fail "备份失败：$($_.Exception.Message)"
-    Read-Host "按回车键退出"
-    exit 1
+
+# 关键：只有「第一次修改前」的那一份才算原始备份。
+# 若每次重跑都备份一遍，备份里就会带着上次写入的 IP，restore 出来就不干净了。
+$curLines   = @([System.IO.File]::ReadAllLines($HostsPath, [System.Text.Encoding]::UTF8))
+$isModified = @($curLines | Where-Object { $_ -match 'WorkBuddy GitHub Fix' }).Count -gt 0
+$originals  = @(Get-ChildItem -Path $etcDir -Filter 'hosts.bak-original-*' -ErrorAction SilentlyContinue)
+
+if ($originals.Count -gt 0) {
+    Info "已有原始备份，本次不再重复备份"
+    Info "（重跑时再备份，会把改过的内容当成原始版本）"
+} else {
+    $kind = 'original'
+    if ($isModified) { $kind = 'modified' }
+    $backup = "$HostsPath.bak-$kind-$stamp"
+    try {
+        Copy-Item $HostsPath $backup -Force
+        Ok "已备份到 hosts.bak-$kind-$stamp"
+        if ($kind -eq 'modified') {
+            Warn "这份备份已经带着旧 IP（找不到更早的干净版本了）"
+        }
+    } catch {
+        Fail "备份失败：$($_.Exception.Message)"
+        Read-Host "按回车键退出"
+        exit 1
+    }
 }
 
 # ---------- 4. 写入 ----------
