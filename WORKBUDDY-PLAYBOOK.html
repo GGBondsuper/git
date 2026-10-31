@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WorkBuddy 使用手册 · 林锐滨专用版</title>
+<style>
+:root{
+  --ink:#111827; --muted:#6b7280; --faint:#9ca3af; --line:#e5e7eb;
+  --bg:#ffffff; --soft:#f8fafc; --accent:#2563eb; --accent-soft:#eff6ff;
+  --ok:#047857; --ok-soft:#ecfdf5; --warn:#b45309; --warn-soft:#fffbeb;
+  --bad:#b91c1c; --bad-soft:#fef2f2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--soft);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.78;-webkit-font-smoothing:antialiased}
+.layout{display:flex;align-items:flex-start}
+aside{width:250px;flex:0 0 250px;position:sticky;top:0;height:100vh;overflow-y:auto;
+  padding:32px 18px 40px 26px;border-right:1px solid var(--line);background:#fff}
+aside .brand{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin-bottom:18px}
+aside a{display:block;padding:7px 10px;margin-bottom:2px;border-radius:7px;color:var(--muted);
+  text-decoration:none;font-size:13.5px;line-height:1.5}
+aside a:hover{background:var(--soft);color:var(--ink)}
+aside a.sub{padding-left:22px;font-size:12.5px;color:var(--faint)}
+main{flex:1;min-width:0;background:#fff;padding:56px 56px 140px;max-width:900px}
+header{border-bottom:2px solid var(--ink);padding-bottom:26px;margin-bottom:44px}
+h1{font-size:31px;line-height:1.32;margin:0 0 14px;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:16px;color:var(--muted);margin:0 0 18px}
+.meta{font-size:12.5px;color:var(--faint);display:flex;gap:18px;flex-wrap:wrap}
+h2{font-size:22px;margin:56px 0 18px;font-weight:700;letter-spacing:-.01em;
+  padding-top:8px;border-top:1px solid var(--line)}
+h2 .num{display:inline-block;min-width:30px;color:var(--accent);font-variant-numeric:tabular-nums}
+h3{font-size:16.5px;margin:32px 0 10px;font-weight:650;color:#1f2937}
+h4{font-size:14.5px;margin:22px 0 8px;font-weight:650;color:#374151}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:22px}
+li{margin-bottom:7px}
+strong{font-weight:650}
+code{background:#f3f4f6;padding:1.5px 5px;border-radius:4px;font-size:13px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#7c2d12}
+pre{background:#0f172a;color:#e2e8f0;padding:16px 18px;border-radius:10px;overflow-x:auto;
+  font-size:12.8px;line-height:1.72;margin:14px 0 18px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+pre code{background:none;color:inherit;padding:0;font-size:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0 22px;font-size:13.8px}
+th{text-align:left;font-weight:650;color:#374151;background:var(--soft);
+  padding:10px 12px;border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.card{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0;background:#fff}
+.card h4{margin-top:0}
+.tip,.warn,.ok,.bad{border-radius:10px;padding:14px 18px;margin:16px 0;font-size:14px;border-left:3px solid}
+.tip{background:var(--accent-soft);border-color:var(--accent)}
+.warn{background:var(--warn-soft);border-color:var(--warn)}
+.ok{background:var(--ok-soft);border-color:var(--ok)}
+.bad{background:var(--bad-soft);border-color:var(--bad)}
+.tip p:last-child,.warn p:last-child,.ok p:last-child,.bad p:last-child{margin-bottom:0}
+.tip b,.warn b,.ok b,.bad b{display:block;margin-bottom:4px;font-size:13px;letter-spacing:.02em}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.pair>div{border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13.5px}
+.pair .no{border-color:#fecaca;background:var(--bad-soft)}
+.pair .yes{border-color:#a7f3d0;background:var(--ok-soft)}
+.pair .label{font-size:11.5px;font-weight:700;letter-spacing:.06em;margin-bottom:8px;display:block}
+.pair .no .label{color:var(--bad)}
+.pair .yes .label{color:var(--ok)}
+.kv{display:grid;grid-template-columns:132px 1fr;gap:10px 16px;font-size:14px;margin:14px 0}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0}
+footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
+@media (max-width:920px){
+  aside{display:none}
+  main{padding:34px 22px 90px}
+  .pair{grid-template-columns:1fr}
+  h1{font-size:25px}
+}
+@media print{
+  aside{display:none}
+  body{background:#fff}
+  main{max-width:none;padding:0}
+  pre{background:#f3f4f6;color:#111827;border:1px solid #e5e7eb}
+  h2{page-break-after:avoid}
+  table,.card,.tip,.warn{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <div class="brand">WorkBuddy 手册</div>
+  <a href="#s0">0 · 三十秒速查</a>
+  <a href="#s1">1 · 任务还是会话</a>
+  <a href="#s1" class="sub">开新任务的信号</a>
+  <a href="#s1-3" class="sub">命名与反模式</a>
+  <a href="#s2">2 · 提问工程</a>
+  <a href="#s2-2" class="sub">万能骨架</a>
+  <a href="#s2-3" class="sub">三种句式</a>
+  <a href="#s3">3 · 四种模式</a>
+  <a href="#s4">4 · 能力盘点</a>
+  <a href="#s5">5 · 上下文管理</a>
+  <a href="#s6">6 · 通用六条心法</a>
+  <a href="#s7">7 · 专属模板</a>
+  <a href="#s8">8 · 每日自查</a>
+</aside>
+
+<main>
+
+<header>
+  <h1>WorkBuddy 使用手册</h1>
+  <p class="lead">不是功能介绍，是一套「决策规则」：什么时候开新任务、话该怎么说、活该交给哪个模式、哪些能力你还没碰过。</p>
+  <div class="meta">
+    <span>为 林锐滨 定制</span>
+    <span>2026-10-31</span>
+    <span>读法：先看第 0 节，需要时按目录跳转</span>
+  </div>
+</header>
+
+<h2 id="s0"><span class="num">0</span>三十秒速查</h2>
+
+<p>先解决最急的：遇到下面这些情况，该怎么做。</p>
+
+<table>
+  <thead><tr><th>你的处境</th><th>该怎么处理</th><th>为什么</th></tr></thead>
+  <tbody>
+    <tr><td>换了个完全不相关的话题</td><td><b>开新任务</b></td><td>旧上下文全是噪声，会干扰判断</td></tr>
+    <tr><td>同一件事继续追问细节</td><td><b>留在当前任务</b></td><td>背景已经建立，重建很浪费</td></tr>
+    <tr><td>任务已交付、目标达成</td><td><b>结束它，开新的</b></td><td>别让它变成杂物抽屉</td></tr>
+    <tr><td>聊了 30 轮以上，开始重复或健忘</td><td><b>让它总结成文件 → 开新任务带上文件</b></td><td>文件是跨任务的传送门</td></tr>
+    <tr><td>要动一个项目的多个文件</td><td><b>一个项目 = 一个任务</b></td><td>文件改动记录、回滚都按任务归类</td></tr>
+    <tr><td>只想问一句、不动文件</td><td><b>Ask 模式，不必开新任务</b></td><td>零成本</td></tr>
+    <tr><td>要做的东西超过两步、有风险</td><td><b>Plan 模式先出方案</b></td><td>返工比慢一步贵得多</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <b>一句话原则</b>
+  <p><b>任务 = 一个目标 + 一套材料。</b>目标变了、材料换了，就开新任务。目标没变、只是接着往下做，就留着。</p>
+</div>
+
+<h2 id="s1"><span class="num">1</span>任务还是会话：把边界画对</h2>
+
+<h3>1.1 任务到底是什么</h3>
+
+<p>不是"聊天窗口"，是<b>一个上下文容器</b>。它有四样东西是独立的：</p>
+
+<dl class="kv">
+  <dt>上下文</dt><dd>你在这个任务里说过的话、给过的文件，只在这里有效</dd>
+  <dt>工作目录</dt><dd>绑定一个文件夹，读写文件都发生在那儿</dd>
+  <dt>改动记录</dt><dd>这个任务改过哪些文件、能回滚，都单独记着</dd>
+  <dt>记忆日志</dt><dd>实质性工作完成后写下的日志，按项目存放</dd>
+</dl>
+
+<p>所以<b>任务名就是你的书签</b>。一个月后想找"那次调代理的事"，靠的就是名字。</p>
+
+<h3 id="s1-2">1.2 开新任务的四个信号</h3>
+
+<table>
+  <thead><tr><th>信号</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><b>目标换轨</b></td><td>从"搞懂 Git"跳到"做一份简历"，这是两件事</td></tr>
+    <tr><td><b>材料换库</b></td><td>换了一套完全不同的文件、另一个项目目录</td></tr>
+    <tr><td><b>阶段完成</b></td><td>上一件事已交付、验收通过</td></tr>
+    <tr><td><b>开始健忘</b></td><td>同一个问题它重复问、或忘了前面的约定 —— 上下文满了</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s1-3">1.3 命名与三个反模式</h3>
+
+<p><b>命名公式：动词 + 对象 + 限定。</b>看名字就知道当时在干嘛。</p>
+
+<div class="pair">
+  <div class="no"><span class="label">别这样起名</span>"新对话" · "求助" · "问题" · "随便问问"</div>
+  <div class="yes"><span class="label">这样起名</span>"初始化 git 并推到 GitHub" · "修简历 PDF 抬头占位符" · "对比两版 PPT 版式"</div>
+</div>
+
+<h4>反模式一：万能任务</h4>
+<p>一个任务里干了三件不相关的事。后果是上下文互相污染，回答开始"串味"。<b>你以为省了开任务的时间，实际上赔了回答质量。</b></p>
+
+<h4>反模式二：碎任务</h4>
+<p>每问一个小问题都开新任务。后果是每次都要重新交代背景，你还得反复解释"我是小白、我在学 Git"。<b>同一主题下连续追问，就该留在原地。</b></p>
+
+<h4>反模式三：一个任务塞两个目标</h4>
+<p>比如"帮我把这个项目改好顺便写份文档"。它会两边都做、两边都做不深。<b>拆成两个任务，各自聚焦。</b></p>
+
+<h3>1.4 长任务怎么续命</h3>
+
+<p>任务必然会变长，关键是<b>别让上下文当备忘录</b>。每完成一个子目标，就做这个动作：</p>
+
+<pre><code>把目前的结论整理成一个文件，写清：已完成 / 关键决定 / 待办 / 踩过的坑</code></pre>
+
+<p>然后开新任务时，第一句就是：</p>
+
+<pre><code>先读 D:\git\某文件.md，那是上一阶段的结果，我们接着做 X</code></pre>
+
+<p>这一步把"上下文"变成了"文件"，而文件不会遗忘、不会变模糊、还能被下一个任务读到。<b>这是长项目能跨天推进的唯一办法。</b></p>
+
+<h2 id="s2"><span class="num">2</span>提问工程：让输出一次到位</h2>
+
+<h3>2.1 回答不够好的三个真实原因</h3>
+
+<table>
+  <thead><tr><th>表面症状</th><th>真实原因</th></tr></thead>
+  <tbody>
+    <tr><td>"答得挺长但不是我想要的"</td><td>没给<b>判断标准</b>，它只能猜什么是"好"</td></tr>
+    <tr><td>"说得太笼统"</td><td>没给<b>具体材料</b>（文件、报错、样例）</td></tr>
+    <tr><td>"方向跑偏了"</td><td>一次给了<b>多个目标</b>，它自己挑了一个</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s2-2">2.2 万能骨架</h3>
+
+<p>六件事，能给几件给几件。给全了，基本一次就能对：</p>
+
+<pre><code>【背景】我在做什么、已经做到哪一步、环境是什么
+【目标】我要的最终结果是什么（一句话）
+【约束】不能做什么、有什么限制（技术栈、时间、不能改的文件）
+【标准】怎么算做好了（能跑通 / 不超过 200 字 / 有注释 / 有对比图）
+【格式】要文件还是对话、要表格还是段落、要多长
+【材料】相关文件路径、报错原文、参考样例</code></pre>
+
+<div class="warn">
+  <b>最常被忽略的是【标准】</b>
+  <p>"帮我写个 README" 和 "帮我写个 README，让完全不懂这个项目的人看完前 10 行就能跑起来"，拿到的是两个世界的东西。</p>
+</div>
+
+<h3>2.3 三个动作，立竿见影</h3>
+
+<h4>动作一：先要计划，别急着动手</h4>
+<pre><code>先别动手。说说你打算怎么做，分几步，每步产出什么。我看过再开始。</code></pre>
+<p>适合：任务复杂、文件多、不确定方向对不对。<b>成本一句话，省下的可能是整轮返工。</b></p>
+
+<h4>动作二：给它一个"样例"</h4>
+<pre><code>风格参考这段（贴一段你喜欢的文字/代码），照这个感觉来</code></pre>
+<p>比形容词管用十倍。"专业一点""简洁一点"它只能猜；给一段真东西，它立刻对齐。</p>
+
+<h4>动作三：要求它自查</h4>
+<pre><code>做完自己检查一遍：有没有跑通、有没有遗漏你的要求，把检查结果告诉我。</code></pre>
+<p>AI 天然倾向于说"我完成了"。<b>明确要求验证，是把"声称完成"变成"真的完成"的唯一手段。</b></p>
+
+<h3 id="s2-3">2.4 三种高效句式</h3>
+
+<h4>句式 A · 诊断式（排错专用）</h4>
+<pre><code>我做了：____
+期望：____
+实际：____
+报错原文：____
+我已经试过：____</code></pre>
+<p>把"我已经试过"写上，能避免它给你一堆你早就试过的建议。</p>
+
+<h4>句式 B · 生成式（造东西专用）</h4>
+<pre><code>给我【产物】，用于【受众/场景】。
+必须包含：____
+不要包含：____
+验收标准：____</code></pre>
+
+<h4>句式 C · 审阅式（验收专用）</h4>
+<pre><code>这是我要交的成果（文件/代码/文案）。
+挑出三个最致命的问题，按严重程度排序，每个给出改法。别夸我。</code></pre>
+<p>"别夸我"三个字很关键 —— 不加这句，一半篇幅会是"整体写得不错，但是……"。</p>
+
+<h3>2.5 同一句话，两种问法</h3>
+
+<div class="pair">
+  <div class="no"><span class="label">低效</span>"怎么学 Git？"<br><br>"我的代码报错了"<br><br>"帮我做个 PPT"</div>
+  <div class="yes"><span class="label">高效</span>"我是零基础，目标是把项目推到 GitHub，三天内要能独立操作。给我一个按天拆的路线，每天 30 分钟，每步有验收标准。"<br><br>"Python 报 KeyError: 'name'，代码和数据在下面。我猜是缺字段，但不确定。"<br><br>"做一份 6 页求职 PPT，Java 后端岗位，深蓝主色，每页一句话标题加三个要点，不要图表。"</div>
+</div>
+
+<h2 id="s3"><span class="num">3</span>四种模式：谁该干哪种活</h2>
+
+<table>
+  <thead><tr><th>模式</th><th>它能干什么</th><th>什么时候用</th></tr></thead>
+  <tbody>
+    <tr><td><b>Agent</b></td><td>直接动手：读写文件、跑命令、装依赖、生成内容</td><td>你已经清楚要什么，让它执行</td></tr>
+    <tr><td><b>Plan</b></td><td>只出方案不动手，你确认后才执行</td><td>任务复杂、有风险、方向不确定</td></tr>
+    <tr><td><b>Ask</b></td><td>只读和回答，不改任何文件</td><td>纯咨询、看代码、评估方案</td></tr>
+  </tbody>
+</table>
+
+<div class="ok">
+  <b>判断口诀</b>
+  <p><b>要动手 → Agent。要方案 → Plan。只想聊 → Ask。</b></p>
+  <p>拿不准时用 Plan：最坏情况是多花一分钟看方案，而不是多花半小时返工。</p>
+</div>
+
+<h2 id="s4"><span class="num">4</span>能力盘点：你可能还不知道它能干的</h2>
+
+<p>这一节专治"感觉它只会聊天"。下面每一项都是真实能力，右边那句可以直接抄去试。</p>
+
+<table>
+  <thead><tr><th>能力</th><th>能做什么</th><th>试一句</th></tr></thead>
+  <tbody>
+    <tr><td><b>文件与命令</b></td><td>读写任意文件、跑终端命令、装依赖、起服务</td><td>"把这堆文件按类型归档，先给方案别动"</td></tr>
+    <tr><td><b>Office 三件套</b></td><td>生成/美化 Word、Excel、PPT（含公式、图表、版式）</td><td>"把这份数据做成带图的 Excel 周报"</td></tr>
+    <tr><td><b>图像与视频</b></td><td>文生图、图生图、短视频、3D 模型</td><td>"做一张深色科技风的博客封面"</td></tr>
+    <tr><td><b>浏览器控制</b></td><td>打开网页、填表、截图、做端到端测试</td><td>"登录这个后台，把订单页截图存下来"</td></tr>
+    <tr><td><b>连接器</b></td><td>接腾讯文档、邮箱、项目管理、代码仓库等外部系统</td><td>"把这份报告传到腾讯文档并给我链接"</td></tr>
+    <tr><td><b>专家中心</b></td><td>100+ 领域专家与专家团（投资、法务、招聘、医学…）</td><td>"换个投资视角挑这份商业计划书的毛病"</td></tr>
+    <tr><td><b>资料库 / 知识库</b></td><td>云端存放文档、表格、网页，可被检索引用</td><td>"把这些笔记存进资料库，以后能搜到"</td></tr>
+    <tr><td><b>技能（Skill）</b></td><td>可安装的专业流程包，让它在特定任务上更专业</td><td>"装一个做 PPT 的技能"</td></tr>
+    <tr><td><b>自动化</b></td><td>定时任务、一次性提醒，到点自己跑</td><td>"每周一早上给我一份上周提交汇总"</td></tr>
+    <tr><td><b>多代理协作</b></td><td>把大活拆给多个子代理并行干，最后汇总</td><td>"三路并行：查资料、写代码、做验证"</td></tr>
+    <tr><td><b>记忆</b></td><td>跨会话记住你的偏好、项目状态、踩过的坑</td><td>"记下来：我的 GitHub 账号是 xxx"</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <b>最被低估的两项</b>
+  <p><b>① 让它自己验证</b> —— 跑一遍、看输出、截图确认，而不是嘴上说完成。<br>
+  <b>② 让它落成文件</b> —— 对话会消失，文件不会。这是把一次性回答变成长期资产的唯一方式。</p>
+</div>
+
+<h2 id="s5"><span class="num">5</span>上下文管理：为什么越聊越笨</h2>
+
+<p>不是它变笨了，是<b>上下文有容量上限</b>。往后堆积的内容越多，早期关键信息的"注意力权重"越低，表现就是：忘了你的约定、重复问已答过的问题、回答开始泛泛而谈。</p>
+
+<h3>五个解法，按有效性排序</h3>
+
+<ol>
+  <li><b>把结论写成文件</b>（最有效）。文件是外部记忆，不占上下文，还能跨任务读。</li>
+  <li><b>用路径引用，别粘贴全文。</b>说"看 D:\git\a.md"，比把 200 行贴进来好得多。</li>
+  <li><b>阶段性压缩。</b>"把目前结论整理成 10 行" —— 让它自己把上下文瘦身。</li>
+  <li><b>及时换任务。</b>主题一换就开新的，别硬撑。</li>
+  <li><b>别塞无关材料。</b>十份文件里九份不相干，只会稀释判断。</li>
+</ol>
+
+<div class="warn">
+  <b>一个高频误判</b>
+  <p>"它刚才还记得，怎么现在忘了？" —— 不是记忆问题，是<b>上下文窗口</b>问题。解法不是重复强调，而是把关键信息沉到文件里，然后引用文件。</p>
+</div>
+
+<h2 id="s6"><span class="num">6</span>通用六条心法（换任何 AI 工具都成立）</h2>
+
+<div class="card">
+  <h4>① 你是决策者，不是点菜者</h4>
+  <p>只说"我要一份报告"，你拿到的是它的默认审美。说出<b>判断标准</b>（给谁看、要多长、什么算好），你拿到的才是你要的。差别不在它，在信息的密度。</p>
+</div>
+
+<div class="card">
+  <h4>② 先计划，后执行</h4>
+  <p>复杂任务先要方案。看方案的成本是一分钟，返工的成本是一小时。<b>会问"你打算怎么做"的人，效率是对手的三倍。</b></p>
+</div>
+
+<div class="card">
+  <h4>③ 不信"我完成了"，要证据</h4>
+  <p>要求它跑一遍、贴输出、给截图、列检查清单。AI 的"完成"是自我声明，不是事实。养成"把结果验一遍"的习惯，能挡掉绝大多数翻车。</p>
+</div>
+
+<div class="card">
+  <h4>④ 上下文质量 = 输出质量</h4>
+  <p>你给的材料决定了天花板。给准确的文件、真实的报错、具体的样例，比任何"请你专业一点"都有效。<b>垃圾进，垃圾出 —— 这条在 AI 时代格外锋利。</b></p>
+</div>
+
+<div class="card">
+  <h4>⑤ 小步快跑，每步验收</h4>
+  <p>让它一口气做十件事，第十件错了你得从头查。<b>拆成三步、每步确认，总耗时反而更短</b>，且你始终知道进展在哪。</p>
+</div>
+
+<div class="card">
+  <h4>⑥ 让它留痕</h4>
+  <p>写文件、写日志、写 TODO。<b>对话是一次性的，文件是可继承的。</b>一个项目能不能跨周推进，全看有没有留痕。</p>
+</div>
+
+<h2 id="s7"><span class="num">7</span>你的专属模板</h2>
+
+<p>按你最常用的四类场景写好，复制改填空就行。</p>
+
+<h3>① 学技术 / 查概念</h3>
+<pre><code>我在学【主题】，零基础/有一点基础。
+目标：能用它完成【具体任务】。
+请按这个顺序讲：
+1. 一句话本质（用生活类比）
+2. 一张示意图说明结构和流程
+3. 最小可运行的例子
+4. 三个新手必踩的坑
+5. 一道检查我是否真懂的小问题（先别给答案）
+不要用没解释过的术语。</code></pre>
+
+<h3>② 写代码 / 做项目</h3>
+<pre><code>目标：【一句话说清要做出什么】
+环境：Windows + 【语言/框架版本】
+现有文件：【路径】
+约束：
+- 不引入额外第三方库
+- 保持现有代码风格
+- 单文件不超过 200 行
+验收：能跑通，且我执行【命令】时输出【预期】
+先给方案和文件清单，我确认后再写。</code></pre>
+
+<h3>③ 写文档 / 做 PPT</h3>
+<pre><code>产出：【Word 报告 / 6 页 PPT / 一页纸方案】
+受众：【谁会看，他关心什么】
+目的：【说服 / 汇报 / 备忘】
+必须包含：____
+不要包含：____
+风格参考：【贴一段样例或给一个已有的文件路径】
+页数/字数上限：____
+先给大纲，我确认后再展开。</code></pre>
+
+<h3>④ 数据与表格</h3>
+<pre><code>文件：【路径】
+我要回答的问题：【一句话】
+期望产出：【透视表 / 图表 / 清洗后的新表】
+口径说明：【金额是含税还是不含税、时间是按提交还是按审批】
+异常怎么处理：【有几行缺值，保留还是剔除，请先问我】
+做完告诉我：数据量、异常行数、你的判断依据。</code></pre>
+
+<h2 id="s8"><span class="num">8</span>每日自查清单</h2>
+
+<table>
+  <thead><tr><th>检查项</th><th>不合格的表现</th></tr></thead>
+  <tbody>
+    <tr><td>这个任务只有一个目标吗</td><td>回答在两个方向之间摇摆</td></tr>
+    <tr><td>任务名能让我一周后认出来吗</td><td>叫"新对话"</td></tr>
+    <tr><td>我给验收标准了吗</td><td>拿到的东西"说不上哪里不对，就是不对"</td></tr>
+    <tr><td>复杂任务我先要方案了吗</td><td>做完发现方向错了，从头再来</td></tr>
+    <tr><td>结果我验证过吗</td><td>它说"已完成"，你直接信了</td></tr>
+    <tr><td>重要结论落成文件了吗</td><td>三天后想找，只能翻聊天记录</td></tr>
+  </tbody>
+</table>
+
+<div class="ok">
+  <b>如果只能记住三句</b>
+  <p><b>1. 一个任务一个目标。</b><br>
+  <b>2. 说清背景、标准、材料，而不是只说要什么。</b><br>
+  <b>3. 重要结论写成文件 —— 对话会消失，文件不会。</b></p>
+</div>
+
+<footer>
+  <p>本文件：<code>D:\git\WORKBUDDY-PLAYBOOK.html</code> · 生成于 2026-10-31</p>
+  <p>配套阅读：<code>GIT-CHEATSHEET.md</code>（Git 命令手册）、<code>GIT-NOTES.md</code>（速查卡）</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
